@@ -212,7 +212,7 @@ switch(choix){
         break;     
         case 2:
             function Acheter(trips){
-                
+
 
             }
             break;
@@ -224,7 +224,7 @@ switch(choix){
 
 
 
-
+console.log("Hello")
 
 
 
