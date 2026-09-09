@@ -224,7 +224,6 @@ switch(choix){
 
 
 
-console.log("Hello")
 
 
 
