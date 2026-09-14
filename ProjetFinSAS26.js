@@ -271,32 +271,44 @@ function Afficher_les_trajets(){
     
 }
 
+const ticketsAnnuler = []
+ 
 function Acheter_un_tickets(){
  let Nom = prompt("Nom du passager: ")      
  let Identifiant = Number(prompt('Identifiant du trajet: ')) 
  let trajet = false
+
      //Apres utilisateur entrer les donneés d'abord il faut de vérifier que ces donneés compatibles avec le data stocker//
     for(let trip of trips){
         if(Identifiant === trip.id){
           if(trip.availableSeats > 0){
-            let place = 50-trip.availableSeats+1;     
-      //Crée un ticket//
-            let ticket = {
-                 id: tickets.length+1,
-                 passengerName: Nom,
-                 tripId: trip.id,
-                 seatNumber: place,
-                 price: trip.price
-                }; 
-            tickets.push(ticket);       //stocker le ticket dans le data de tickets//
-            console.log(" \n Ticket acheté avec succès. \n ") 
-            console.log(`Ticket #${tickets.length} \n`) 
-            console.log(`Trajet : ${trip.departure} → ${trip.destination}\n`)  
-            console.log(`Passager : ${ticket.passengerName} \n`)   
-            console.log(`Place : ${place} \n`) 
-            console.log(`Prix : ${trip.price} \n`)  
+            let place = 50-trip.availableSeats+1;
 
-            trip.availableSeats = trip.availableSeats-1
+      for(let ticket of ticketsAnnuler){
+         if(ticket.tripId === trip.id){
+            place = ticket.seatNumber;   // Vérifier s'il existe une place déja annulée//
+            ticketsAnnuler.splice(ticketsAnnuler.indexOf(ticket), 1); 
+            break; 
+            } 
+        }
+      //Crée un ticket//
+    let ticket = {
+         id: tickets.length+1,
+        passengerName: Nom,
+        tripId: trip.id,
+        seatNumber: place,
+        price: trip.price
+    }; 
+    tickets.push(ticket);      //stocker le ticket dans le data de tickets//
+          
+    console.log("Ticket acheté avec succès. \n ") 
+    console.log(`Ticket #${tickets.length} \n`) 
+    console.log(`Trajet : ${trip.departure} → ${trip.destination}\n`)  
+    console.log(`Passager : ${ticket.passengerName} \n`)   
+    console.log(`Place : ${place} \n`) 
+    console.log(`Prix : ${trip.price} \n`)  
+
+     trip.availableSeats = trip.availableSeats-1;
           }
           else if(trip.availableSeats === 0){
             console.log("Train complet.")
@@ -334,23 +346,25 @@ function Afficher_les_tickets(){
 function Annuler_un_ticket(){
  let IdTicket = Number(prompt('Identifiant du ticket: '))           
    
-    for(let ticket in tickets){
+    for(let ticket of tickets){
         if(IdTicket === ticket.id ){        // Ticket existe donc retrouver le trajet associé//
             for(let trip of trips){
                 if(trip.id === ticket.tripId ){
                     trip.availableSeats+=1;
                 } 
             } 
-        }
-    let i = tickets.findIndex(ticket =>ticket.tripId===IdTicket)   //Rechercher sur l'identifiant assimiler//
-    tickets.splice(i,1);
+               //Rechercher sur l'identifiant assimiler//
+    let i = tickets.findIndex(ticket => ticket.id === IdTicket)
+    ticketsAnnuler.push(ticket)  //Stocker le ticket annulé//
+    tickets.splice(i,1);         
     console.log("Ticket annulé avec succès.")
-    break;
+        break;
+        }
     }
 }
 
 function   Rechecher_un_ticket(){
- let Name = prompt("Nom passager: ")
+ let Name = prompt("Nom passager: ").trim().toUpperCase()
  let chercher = false
  
   for(let ticket of tickets){
@@ -374,8 +388,9 @@ function   Rechecher_un_ticket(){
 } 
 
 function Filtrer_les_trajets(){
-    let départ = prompt("Ville de départ : ")
+    let départ = prompt("Ville de départ : ").trim().toUpperCase()
     let trouve = false
+
      //Afficher tous les trajets ont meme départ//
     for(let i=0; i<trips.length; i++){
          if(trips[i].departure.toUpperCase() === départ.toUpperCase()){
@@ -438,8 +453,6 @@ for(let i=0; i < tickets.length; i++){
         console.log(`#${Max_Ticket} vendus \n`)
     }
 }
-
-
 
 while(start){
     
